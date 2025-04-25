@@ -1,0 +1,291 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f7f7f7;
+}
+
+/* Header styles */
+header {
+    background-color: #e40000;
+    color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo img {
+    margin-top:0.4rem;
+    max-height: 2rem;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+}
+
+nav ul li {
+    margin-left: 1.5rem;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+nav ul li a:hover {
+    color: #ff6b6b;
+}
+
+/* Main content styles */
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+section {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+}
+
+/* Cartridge grid styles */
+.cartridges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.cartridge-item {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+.cartridge-item:hover {
+    transform: translateY(-5px);
+}
+
+.cartridge-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    margin: 0;
+}
+
+.cartridge-item h3 {
+    padding: 1rem;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.cartridge-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 1rem 1rem;
+}
+
+/* Button styles */
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: #e40000;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+input[type="file"] {
+    width: 100%;
+    padding: 0.7rem;
+    background-color: transparent;
+    border: 1px solid #000000;
+    color: #000000;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.btn:hover {
+    background-color: #e40000;
+    color: #ffffff;
+}
+
+.play-btn {
+    background-color: transparent;
+    border: 1px solid #e40000;
+    color: #e40000;
+}
+
+.play-btn:hover {
+    background-color: #e40000;
+    color: #FFFFFF;
+}
+
+.edit-btn {
+    background-color: transparent;
+    border: 1px solid #e40000;
+    color: #e40000;
+}
+
+.edit-btn:hover {
+    background-color: #e40000;
+    color: #FFFFFF;
+}
+
+.delete-btn {
+    background-color: #c50000;
+}
+
+.delete-btn:hover {
+    background-color: #e40000;
+}
+
+.submit-btn {
+    background-color: #e40000;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+}
+
+.cancel-btn {
+    background-color: transparent;
+    border: 1px solid #e40000;
+    color: #e40000;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+}
+
+/* Form styles */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 0.7rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+small {
+    color: #7f8c8d;
+    font-size: 0.8rem;
+}
+
+.current-image {
+    max-width: 200px;
+    margin-bottom: 1rem;
+}
+
+/* Message styles */
+.message {
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+}
+
+.success {
+    background-color: #d4edda;
+    color: #ff0000;
+    border: 1px solid #c3e6cb;
+}
+
+.error {
+    background-color: #f8d7da;
+    color: #000000;
+    border: 1px solid #f5c6cb;
+}
+
+/* Play game styles */
+.game-container {
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.controls-info {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+}
+
+.controls-info ul {
+    list-style-position: inside;
+    margin-top: 0.5rem;
+}
+
+.back-button {
+    text-align: center;
+}
+
+/* Footer styles */
+footer {
+    background-color: #e40000;
+    color: #fff;
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: 5.5rem;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .cartridges-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    header {
+        flex-direction: column;
+        padding: 1rem;
+    }
+    
+    nav ul {
+        margin-top: 1rem;
+    }
+    
+    nav ul li {
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+}
+
+/* Emulator specific styles */
+#nes-canvas {
+    border: 2px solid #232323;
+    margin: 0 auto;
+    display: block;
+    height: auto;
+    max-width: 55%;
+}

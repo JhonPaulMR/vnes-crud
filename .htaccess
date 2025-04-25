@@ -1,0 +1,26 @@
+# Enable URL rewriting
+RewriteEngine On
+
+# Set base directory
+RewriteBase /retrogames/
+
+# Prevent direct access to certain directories
+RewriteRule ^includes/ - [F,L]
+RewriteRule ^config/ - [F,L]
+
+# Allow direct access to uploads directory for ROM files and cover images
+RewriteRule ^uploads/ - [L]
+
+# Prevent directory listing
+Options -Indexes
+
+# Set default character set
+AddDefaultCharset UTF-8
+
+# Set security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
+</IfModule>
