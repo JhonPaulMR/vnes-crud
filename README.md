@@ -1,75 +1,70 @@
-# RetroGames - NES Cartridge Manager
+# vnes-crud
 
-A web application for managing and playing NES game cartridges. This application allows users to upload, organize, and play their NES ROM collection directly in the browser.
 
-## Features
+# VNes CRUD - Gerenciador de Cartuchos NES
 
-- Create, Read, Update, and Delete (CRUD) operations for NES game cartridges
-- Upload cover images for each cartridge
-- Upload NES ROM files
-- Play NES games directly in the browser with a JavaScript NES emulator
-- Responsive design that works on desktop and mobile devices
+Está é uma aplicação web de um crud simples para gerenciar e jogar ROMs de jogos do Nintendo Entertainment System (NES) diretamente no seu navegador. Ele permite fazer upload, visualizar, editar, excluir e jogar seus cartuchos digitais.
 
-## System Requirements
+## Funcionalidades
 
-- Web Server VM:
-  - Ubuntu Server 22.04 LTS
-  - Apache 2.4+
-  - PHP 7.4+
-  - PHP GD extension
-  - PHP MySQL extension
+* **Listar Cartuchos:** Exibe todos os cartuchos NES adicionados com suas capas.
+* **Adicionar Novo Cartucho:** Faz upload de um arquivo ROM `.nes` e uma imagem de capa (`.jpg`, `.jpeg`, `.png`, `.gif`) para adicionar um novo jogo à coleção.
+* **Editar Cartucho:** Atualiza o nome, a imagem da capa ou o arquivo ROM de um cartucho existente.
+* **Excluir Cartucho:** Remove um cartucho da coleção e apaga os arquivos associados do servidor.
+* **Jogar:** Emula e joga o jogo NES selecionado diretamente no navegador usando a biblioteca JSNES.
 
-- Database VM:
-  - Ubuntu Server 22.04 LTS
-  - MySQL 5.7+ or MariaDB 10.3+
+## Requisitos
 
-## Installation Instructions
+* Servidor Web com suporte a PHP (Ex: Apache, Nginx)
+* PHP
+* Banco de Dados MySQL
+* Biblioteca JavaScript [JSNES](https://github.com/bfirsh/jsnes) (o arquivo `jsnes.min.js` deve estar em `node_modules/jsnes/dist/`)
 
-### Database Setup
+## Instruções de Configuração
 
-1. Install MySQL/MariaDB on the database VM
-2. Create a database named `cartridge_manager`
-3. Create a user with permissions to access this database
-4. Import the SQL schema (or run the setup script)
+1.  **Clone o Repositório:**
+    ```bash
+    git clone https://github.com/JhonPaulMR/vnes-crud
+    ```
 
-### Web Server Setup
+2.  **Configure o Banco de Dados:**
+    * Crie um banco de dados MySQL (`cartridges`).
+    * Importe a estrutura da tabela. Você precisará de uma tabela chamada `cartridges` com colunas como:
+        * `id` (INT, Primary Key, Auto Increment)
+        * `name` (VARCHAR)
+        * `cover_image` (VARCHAR - caminho para a imagem)
+        * `rom_path` (VARCHAR - caminho para a ROM)
+        * `created_at` (TIMESTAMP, default CURRENT_TIMESTAMP)
+    * Edite o arquivo `config/database.php` com as suas credenciais do banco de dados (host, usuário, senha, nome do banco). **Certifique-se de preencher o `DB_HOST`**.
 
-1. Install Apache and PHP on the web server VM
-2. Configure a virtual host for the application
-3. Clone or copy the application files to the web server
-4. Update the database configuration in `config/database.php`
-5. Ensure proper permissions for the uploads directories
+3.  **Crie os Diretórios de Upload:**
+    * Crie os diretórios `uploads/covers/` e `uploads/roms/` na raiz do projeto.
+    * Certifique-se de que o servidor web tenha permissão de escrita nesses diretórios.
+    ```bash
+    chmod -R 755 crud
+    chown www-data:www-data crud
+    ```
 
-### DNS Configuration
+4.  **Dependências (JSNES):**
+    * Certifique-se que o arquivo `jsnes.min.js` esteja acessível no caminho `node_modules/jsnes/dist/jsnes.min.js` conforme esperado pelo `play.php`.
 
-1. Add entries to your hosts file or DNS server:
-   - `<db-vm-ip> db.retrogames.local`
-   - `<web-vm-ip> www.retrogames.local retrogames.local`
+5.  **Acesse a Aplicação:**
+    * Aponte seu navegador para o diretório onde você configurou o projeto no seu servidor web (ex: `http://localhost/crud/`).
 
-## Usage
+## Como Usar
 
-1. Access the application at http://www.retrogames.local
-2. Click "Add New Cartridge" to upload a new game
-3. Fill in the cartridge name, upload a cover image, and a NES ROM file
-4. View your cartridge library on the main page
-5. Use the "Play" button to launch the emulator and play the game
-6. Use the "Edit" button to modify cartridge details
-7. Use the "Delete" button to remove a cartridge
+1.  Acesse a página inicial (`index.php`) para ver a lista de cartuchos.
+2.  Clique em "Add New Cartridge" para ir ao formulário de adição (`create.php`).
+3.  Preencha o nome, selecione a imagem da capa e o arquivo ROM `.nes` e envie o formulário.
+4.  Na lista de cartuchos, você terá as opções:
+    * **Play:** Abre o emulador (`play.php`) com o jogo selecionado.
+    * **Edit:** Abre o formulário de edição (`edit.php`) para o cartucho selecionado.
+    * **Delete:** Remove o cartucho após confirmação.
 
-## Keyboard Controls for NES Emulator
+## Controles do Emulador (Padrão JSNES)
 
-- Arrow keys: D-Pad movement
-- Z: A button
-- X: B button
-- Enter: Start button
-- Shift: Select button
-
-## Acknowledgements
-
-- JSNES - JavaScript NES emulator library
-- This application is for educational purposes only
-- Users should only upload ROM files they legally own
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+* **Setas Direcionais:** D-Pad
+* **Z:** Botão B
+* **X:** Botão A
+* **Enter:** Start
+* **Shift:** Select
