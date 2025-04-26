@@ -37,9 +37,8 @@ Está é uma aplicação web de um crud simples para gerenciar e jogar ROMs de j
         * `created_at` (TIMESTAMP, default CURRENT_TIMESTAMP)
     * Edite o arquivo `config/database.php` com as suas credenciais do banco de dados (host, usuário, senha, nome do banco). **Certifique-se de preencher o `DB_HOST`**.
 
-3.  **Crie os Diretórios de Upload:**
-    * Crie os diretórios `uploads/covers/` e `uploads/roms/` na raiz do projeto.
-    * Certifique-se de que o servidor web tenha permissão de escrita nesses diretórios.
+3.  **Configure as Permissões**
+    * Certifique-se de que o servidor web tenha permissão de escrita nos diretórios.
     ```bash
     chmod -R 755 crud
     chown www-data:www-data crud
