@@ -49,6 +49,8 @@ Está é uma aplicação web de um crud simples para gerenciar e jogar ROMs de j
 
 5.  **Acesse a Aplicação:**
     * Aponte seu navegador para o diretório onde você configurou o projeto no seu servidor web (ex: `http://localhost/crud/`).
+    * Ou se preferir configure o arquivo hosts de sua máquina para acessar a aplicação com um domínio personalizado
+    * ex: 192.0.0.0 crud.com
 
 ## Como Usar
 
