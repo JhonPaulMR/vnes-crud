@@ -1,14 +1,12 @@
 <?php
-// Database connection configuration
-define('DB_HOST', '');  // Fill with your database host IP
-define('DB_USER', 'cruduser');
-define('DB_PASS', 'crud123');
-define('DB_NAME', 'cartridges');
+// Conexão com o banco de dados usando variáveis de ambiente
+$host = getenv('DB_HOST');
+$db_name = getenv('DB_DATABASE');
+$username = getenv('DB_USERNAME');
+$password = getenv('DB_PASSWORD');
+$conn = new mysqli($host, $username, $password, $db_name);
 
-// Create connection
-$conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-
-// Check connection
+// Verifica a conexão
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }

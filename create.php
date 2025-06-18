@@ -1,13 +1,14 @@
 <?php
-require_once "includes/functions.php";
-include "includes/header.php";
+// Inicia a sessão no topo do arquivo. Essencial para passar mensagens entre páginas.
+session_start();
 
-$message = "";
-$messageType = "";
+// Inclui funções e a conexão com o banco. Estes arquivos não devem gerar HTML.
+require_once "includes/functions.php";
+require_once "config/database.php"; // Adicionei a conexão aqui
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validate input
+    // Validações... (seu código de validação está bom)
     if (empty($_POST["name"])) {
         $message = "Cartridge name is required.";
         $messageType = "error";
@@ -18,23 +19,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $message = "ROM file is required.";
         $messageType = "error";
     } else {
-        // Upload cover image
+        // Lógica de upload... (seu código de upload está bom)
         $coverUpload = uploadFile($_FILES["cover_image"], "uploads/covers/", ["jpg", "jpeg", "png", "gif"]);
         
         if (!$coverUpload["success"]) {
             $message = $coverUpload["message"];
             $messageType = "error";
         } else {
-            // Upload ROM file
             $romUpload = uploadFile($_FILES["rom_file"], "uploads/roms/", ["nes"]);
             
             if (!$romUpload["success"]) {
-                // Delete the uploaded cover image if ROM upload fails
                 deleteFile($coverUpload["path"]);
                 $message = $romUpload["message"];
                 $messageType = "error";
             } else {
-                // Insert data into database
+                // Inserção no banco...
                 $name = $_POST["name"];
                 $coverPath = $coverUpload["path"];
                 $romPath = $romUpload["path"];
@@ -44,14 +43,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->bind_param("sss", $name, $coverPath, $romPath);
                 
                 if ($stmt->execute()) {
-                    $message = "Cartridge created successfully!";
-                    $messageType = "success";
+                    // SUCESSO! Salva a mensagem na SESSÃO e redireciona.
+                    $_SESSION['message'] = "Cartridge created successfully!";
+                    $_SESSION['message_type'] = "success";
                     
-                    // Redirect to home page after successful creation
                     header("Location: index.php");
-                    exit();
+                    exit(); // Garante que o script pare aqui e o redirecionamento ocorra.
                 } else {
-                    // Delete the uploaded files if database insert fails
+                    // Erro no banco...
                     deleteFile($coverUpload["path"]);
                     deleteFile($romUpload["path"]);
                     $message = "Error: " . $stmt->error;
@@ -61,14 +60,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 }
+
+include "includes/header.php"; 
 ?>
 
 <section class="create-cartridge">
     <h1>Add New Cartridge</h1>
     
-    <?php if (!empty($message)): ?>
+    <?php if (!empty($message)): // Esta parte agora só exibirá mensagens de ERRO ?>
         <div class="message <?php echo $messageType; ?>">
-            <?php echo $message; ?>
+            <?php echo htmlspecialchars($message); ?>
         </div>
     <?php endif; ?>
     

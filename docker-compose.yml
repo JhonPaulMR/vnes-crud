@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # Serviço do Banco de Dados (sem alterações)
+  db:
+    image: mysql:8.0
+    container_name: db_vnes
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+
+  # Serviço da Aplicação Web
+  web:
+    build: .
+    container_name: web_vnes
+    restart: unless-stopped
+    ports:
+      - '${APP_PORT:-8080}:80'
+    volumes:
+      # Mapeia o código da aplicação, exceto a pasta de uploads
+      - .:/var/www/html
+      # Usa um volume nomeado especificamente para a pasta de uploads
+      - uploads_data:/var/www/html/uploads
+    depends_on:
+      - db
+    networks:
+      - app-network
+    environment:
+      DB_HOST: db
+      DB_DATABASE: '${DB_DATABASE}'
+      DB_USERNAME: '${DB_USERNAME}'
+      DB_PASSWORD: '${DB_PASSWORD}'
+
+networks:
+  app-network:
+    driver: bridge
+
+# Declaração dos volumes nomeados
+volumes:
+  db_data:
+    driver: local
+  uploads_data: # <-- ADICIONAMOS ESTE VOLUME
+    driver: local
