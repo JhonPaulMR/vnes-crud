@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # Serviço do Banco de Dados (sem alterações)
@@ -7,10 +7,10 @@ services:
     container_name: db_vnes
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: '${DB_DATABASE}'
-      MYSQL_USER: '${DB_USERNAME}'
-      MYSQL_PASSWORD: '${DB_PASSWORD}'
-      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_USER: "${DB_USERNAME}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
     volumes:
       - db_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -23,7 +23,7 @@ services:
     container_name: web_vnes
     restart: unless-stopped
     ports:
-      - '${APP_PORT:-8080}:80'
+      - "${APP_PORT:-8080}:80"
     volumes:
       # Mapeia o código da aplicação, exceto a pasta de uploads
       - .:/var/www/html
@@ -35,9 +35,9 @@ services:
       - app-network
     environment:
       DB_HOST: db
-      DB_DATABASE: '${DB_DATABASE}'
-      DB_USERNAME: '${DB_USERNAME}'
-      DB_PASSWORD: '${DB_PASSWORD}'
+      DB_DATABASE: "${DB_DATABASE}"
+      DB_USERNAME: "${DB_USERNAME}"
+      DB_PASSWORD: "${DB_PASSWORD}"
 
 networks:
   app-network:

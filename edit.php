@@ -22,80 +22,75 @@ if (!$cartridge) {
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validate input
+    // 1. Valida se o nome foi enviado
     if (empty($_POST["name"])) {
         $message = "Cartridge name is required.";
         $messageType = "error";
     } else {
+        // 2. Prepara as variáveis com os dados atuais e novos
         $name = $_POST["name"];
-        $coverPath = $cartridge["cover_image"];
-        $romPath = $cartridge["rom_path"];
-        $updateCover = false;
-        $updateRom = false;
+        $coverPath = $cartridge["cover_image"]; // Começa com o caminho da imagem atual
+        $romPath = $cartridge["rom_path"];       // Começa com o caminho da ROM atual
         
-        // Check if new cover image is uploaded
-        if (isset($_FILES["cover_image"]) && $_FILES["cover_image"]["error"] != UPLOAD_ERR_NO_FILE) {
+        $uploadError = false;
+
+        // 3. Verifica se uma NOVA imagem de capa foi enviada
+        if (isset($_FILES["cover_image"]) && $_FILES["cover_image"]["error"] == UPLOAD_ERR_OK) {
             $coverUpload = uploadFile($_FILES["cover_image"], "uploads/covers/", ["jpg", "jpeg", "png", "gif"]);
             
-            if (!$coverUpload["success"]) {
+            if ($coverUpload["success"]) {
+                // Deleta a imagem antiga se o novo upload deu certo
+                deleteFile($cartridge["cover_image"]); 
+                $coverPath = $coverUpload["path"]; // Atualiza a variável com o novo caminho
+            } else {
                 $message = $coverUpload["message"];
                 $messageType = "error";
-            } else {
-                $coverPath = $coverUpload["path"];
-                $updateCover = true;
+                $uploadError = true;
             }
         }
         
-        // Check if new ROM file is uploaded
-        if (isset($_FILES["rom_file"]) && $_FILES["rom_file"]["error"] != UPLOAD_ERR_NO_FILE) {
+        // 4. Verifica se uma NOVA ROM foi enviada (só se não houve erro antes)
+        if (!$uploadError && isset($_FILES["rom_file"]) && $_FILES["rom_file"]["error"] == UPLOAD_ERR_OK) {
             $romUpload = uploadFile($_FILES["rom_file"], "uploads/roms/", ["nes"]);
-            
-            if (!$romUpload["success"]) {
-                if ($updateCover) {
-                    // Delete the newly uploaded cover image if ROM upload fails
-                    deleteFile($coverPath);
-                }
+
+            if ($romUpload["success"]) {
+                // Deleta a ROM antiga se o novo upload deu certo
+                deleteFile($cartridge["rom_path"]);
+                $romPath = $romUpload["path"]; // Atualiza a variável com o novo caminho
+            } else {
                 $message = $romUpload["message"];
                 $messageType = "error";
-            } else {
-                $romPath = $romUpload["path"];
-                $updateRom = true;
+                $uploadError = true;
+                // Se a ROM falhou, mas a capa foi enviada, deleta a capa nova também
+                if (isset($coverUpload) && $coverUpload["success"]) {
+                    deleteFile($coverUpload["path"]);
+                }
             }
         }
-        
-        if (empty($message)) {
-            // Update data in database
+
+        // 5. Se não houve nenhum erro de upload, atualiza o banco de dados
+        if (!$uploadError) {
+            // A query é estática e sempre correta. Nós só mudamos os valores nas variáveis.
             $sql = "UPDATE cartridges SET name = ?, cover_image = ?, rom_path = ? WHERE id = ?";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sssi", $name, $coverPath, $romPath, $id);
             
-            if ($stmt->execute()) {
-                // Delete old files if new ones were uploaded
-                if ($updateCover) {
-                    deleteFile($cartridge["cover_image"]);
+            // Verificação para garantir que o prepare() funcionou (boa prática)
+            if ($stmt) {
+                $stmt->bind_param("sssi", $name, $coverPath, $romPath, $id);
+                
+                if ($stmt->execute()) {
+                    // Define a mensagem de sucesso na sessão e redireciona
+                    session_start();
+                    $_SESSION['message'] = "Cartridge updated successfully!";
+                    $_SESSION['message_type'] = "success";
+                    header("Location: index.php");
+                    exit();
+                } else {
+                    $message = "Database update failed: " . $stmt->error;
+                    $messageType = "error";
                 }
-                
-                if ($updateRom) {
-                    deleteFile($cartridge["rom_path"]);
-                }
-                
-                $message = "Cartridge updated successfully!";
-                $messageType = "success";
-                
-                // Redirect to home page after successful update
-                header("Location: index.php");
-                exit();
             } else {
-                // Delete the newly uploaded files if database update fails
-                if ($updateCover) {
-                    deleteFile($coverPath);
-                }
-                
-                if ($updateRom) {
-                    deleteFile($romPath);
-                }
-                
-                $message = "Error: " . $stmt->error;
+                $message = "Failed to prepare the SQL statement: " . $conn->error;
                 $messageType = "error";
             }
         }
