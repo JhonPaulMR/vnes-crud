@@ -22,6 +22,25 @@ header {
     align-items: center;
 }
 
+html, body {
+    height: 100%; /* Garante que o html e body ocupem 100% da viewport */
+    margin: 0; /* Remove margens padrão do body */
+}
+
+body {
+    display: flex;
+    flex-direction: column; /* Organiza os filhos em coluna */
+}
+
+main {
+    flex: 1;
+    width: 100%; /* Faz o conteúdo principal ocupar todo o espaço restante */
+}
+
+.cartridges-list, .play-cartridge {
+    width: 100%;
+}
+
 .logo img {
     margin-top:0.4rem;
     max-height: 2rem;
