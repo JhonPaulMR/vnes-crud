@@ -1,5 +1,5 @@
 /**
- * RetroGames Emulator Controller
+ * VNES - Cartridge Manager
  * This file handles the NES emulator functionality and keyboard controls
  */
 

@@ -2,7 +2,6 @@
 require_once "includes/functions.php";
 include "includes/header.php";
 
-// Get all cartridges
 $cartridges = getAllCartridges($conn);
 ?>
 

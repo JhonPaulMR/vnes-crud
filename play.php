@@ -1,5 +1,4 @@
 <?php
-// Habilitar exibição de erros para depuração (REMOVER EM PRODUÇÃO)
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -7,7 +6,6 @@ error_reporting(E_ALL);
 require_once "includes/functions.php";
 include "includes/header.php";
 
-// Validar e sanitizar ID
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]]);
 
 if ($id === false || $id === null) {
@@ -73,21 +71,23 @@ if (!file_exists($cartridge['rom_path'])) {
 
 <script type="text/javascript" src="node_modules/jsnes/dist/jsnes.min.js"></script>
 <script>
-    console.log('Tentando carregar jsnes.min.js...');
     if (typeof jsnes === 'undefined' || typeof jsnes.NES === 'undefined') {
-        console.log('jsnes ou jsnes.NES não está definido.');
-        document.getElementById('emulator').innerHTML = '<p style="color:red; font-weight: bold;">Erro Crítico: Biblioteca JSNES não carregada. Verifique o caminho do arquivo /js/jsnes.min.js.</p>';
-        console.error('jsnes não está definido. Verifique se /js/jsnes.min.js está acessível.');
-    } else {
-        console.log('jsnes está definido.');
+        document.getElementById('emulator').innerHTML = '<p style="color:red; font-weight: bold;">Erro Crítico: Biblioteca JSNES não carregada.</p>';
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('Iniciando inicialização do emulador...');
-
         function startEmulator() {
             var romPath = "<?php echo htmlspecialchars($cartridge['rom_path'], ENT_QUOTES, 'UTF-8'); ?>";
-            console.log("Tentando carregar ROM de:", romPath);
+
+            var AudioContext = window.AudioContext || window.webkitAudioContext;
+            var audio_ctx = null;
+            var sampleRate = 44100;
+            try {
+                audio_ctx = new AudioContext();
+                sampleRate = audio_ctx.sampleRate;
+            } catch (e) {
+                console.warn("AudioContext not supported or blocked", e);
+            }
 
             var nes = null;
             try {
@@ -103,18 +103,18 @@ if (!file_exists($cartridge['rom_path'])) {
                         audio_samples_L[audio_write_cursor] = l;
                         audio_samples_R[audio_write_cursor] = r;
                         audio_write_cursor = (audio_write_cursor + 1) & SAMPLE_MASK;
-                    }
+                    },
+                    sampleRate: sampleRate
                 });
-                console.log('Instância jsnes.NES criada com sucesso.');
             } catch (e) {
                 document.getElementById('emulator').innerHTML = '<p style="color:red; font-weight: bold;">Erro ao inicializar JSNES. Verifique o console.</p>';
-                console.error('Erro ao criar instância jsnes.NES:', e);
+                console.error(e);
                 return;
             }
 
-	    let lastTime = 0;
+            let lastTime = 0;
             let accumulator = 0;
-	    const dt = 1 / 50;
+            const dt = 1 / 60.0988;
             var SCREEN_WIDTH = 256;
             var SCREEN_HEIGHT = 240;
             var FRAMEBUFFER_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT;
@@ -127,29 +127,32 @@ if (!file_exists($cartridge['rom_path'])) {
             var audio_samples_R = new Float32Array(SAMPLE_COUNT);
             var audio_write_cursor = 0, audio_read_cursor = 0;
 
-	function onAnimationFrame(timestamp) {
-    	if (!lastTime) {
-        	lastTime = timestamp / 1000; // Inicializa lastTime na primeira chamada
-    	}
-    	window.requestAnimationFrame(onAnimationFrame);
+            function onAnimationFrame(timestamp) {
+                if (!lastTime) {
+                    lastTime = timestamp / 1000;
+                }
+                window.requestAnimationFrame(onAnimationFrame);
 
-    	let currentTime = timestamp / 1000; // Converte para segundos
-    	let frameTime = currentTime - lastTime;
-    	lastTime = currentTime;
+                let currentTime = timestamp / 1000;
+                let frameTime = currentTime - lastTime;
+                lastTime = currentTime;
 
-    	accumulator += frameTime;
+                if (frameTime > 0.25) {
+                    frameTime = 0.25;
+                }
 
-    	while (accumulator >= dt) {
-        	nes.frame(); // Avança a emulação
-        	accumulator -= dt;
-    	}
+                accumulator += frameTime;
 
-    	// Renderiza o frame mais recente
-    	if (framebuffer_u8) {
-        	image.data.set(framebuffer_u8);
-        	canvas_ctx.putImageData(image, 0, 0);
-    	     }
-	    }
+                while (accumulator >= dt) {
+                    nes.frame();
+                    accumulator -= dt;
+                }
+
+                if (framebuffer_u8) {
+                    image.data.set(framebuffer_u8);
+                    canvas_ctx.putImageData(image, 0, 0);
+                }
+            }
 
             function audio_remain() {
                 return (audio_write_cursor - audio_read_cursor) & SAMPLE_MASK;
@@ -158,7 +161,17 @@ if (!file_exists($cartridge['rom_path'])) {
             function audio_callback(event) {
                 var dst = event.outputBuffer;
                 var len = dst.length;
-                if (audio_remain() < len) return;
+                
+                if (audio_remain() < len) {
+                    var dst_l = dst.getChannelData(0);
+                    var dst_r = dst.getChannelData(1);
+                    for (var i = 0; i < len; i++) {
+                        dst_l[i] = 0;
+                        dst_r[i] = 0;
+                    }
+                    return;
+                }
+                
                 var dst_l = dst.getChannelData(0);
                 var dst_r = dst.getChannelData(1);
                 for (var i = 0; i < len; i++) {
@@ -172,10 +185,9 @@ if (!file_exists($cartridge['rom_path'])) {
             function keyboard(callback, event) {
                 if (!nes) return;
                 var player = 1;
-		// Prevenir o comportamento padrão para as setas (e outras teclas, se desejado)
-    		if ([38, 40, 37, 39].includes(event.keyCode)) {
-        		event.preventDefault();
-    		}
+                if ([38, 40, 37, 39].includes(event.keyCode)) {
+                    event.preventDefault();
+                }
                 switch (event.keyCode) {
                     case 38: callback(player, jsnes.Controller.BUTTON_UP); break;
                     case 40: callback(player, jsnes.Controller.BUTTON_DOWN); break;
@@ -192,25 +204,21 @@ if (!file_exists($cartridge['rom_path'])) {
             function nes_init(canvas_id) {
                 var canvas = document.getElementById(canvas_id);
                 if (!canvas) {
-                    console.error("Elemento canvas com ID '" + canvas_id + "' não encontrado!");
                     document.getElementById('emulator').innerHTML = '<p style="color:red;">Erro: Elemento canvas não encontrado.</p>';
                     return false;
                 }
                 canvas_ctx = canvas.getContext("2d");
                 if (!canvas_ctx) {
-                    console.error("Não foi possível obter o contexto 2D do canvas.");
                     document.getElementById('emulator').innerHTML = '<p style="color:red;">Erro: Não foi possível inicializar o gráfico.</p>';
                     return false;
                 }
                 try {
                     image = canvas_ctx.createImageData(SCREEN_WIDTH, SCREEN_HEIGHT);
                 } catch (e) {
-                    console.error("Erro ao criar ImageData:", e);
                     try {
                         image = canvas_ctx.getImageData(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
                     } catch (e2) {
-                        console.error("Erro ao obter ImageData:", e2);
-                        document.getElementById('emulator').innerHTML = '<p style="color:red;">Erro: Não foi possível criar/obter ImageData do canvas.</p>';
+                        document.getElementById('emulator').innerHTML = '<p style="color:red;">Erro: Não foi possível obter ImageData.</p>';
                         return false;
                     }
                 }
@@ -219,18 +227,15 @@ if (!file_exists($cartridge['rom_path'])) {
                 var buffer = new ArrayBuffer(image.data.length);
                 framebuffer_u8 = new Uint8ClampedArray(buffer);
                 framebuffer_u32 = new Uint32Array(buffer);
-                try {
-                    var AudioContext = window.AudioContext || window.webkitAudioContext;
-                    if (!AudioContext) {
-                        console.warn("Web Audio API não suportada neste navegador.");
-                        return true;
+                
+                if (audio_ctx) {
+                    try {
+                        var script_processor = audio_ctx.createScriptProcessor(AUDIO_BUFFERING, 0, 2);
+                        script_processor.onaudioprocess = audio_callback;
+                        script_processor.connect(audio_ctx.destination);
+                    } catch (e) {
+                        console.error(e);
                     }
-                    var audio_ctx = new AudioContext({ sampleRate: 44100 });
-                    var script_processor = audio_ctx.createScriptProcessor(AUDIO_BUFFERING, 0, 2);
-                    script_processor.onaudioprocess = audio_callback;
-                    script_processor.connect(audio_ctx.destination);
-                } catch (e) {
-                    console.error("Erro ao inicializar Web Audio API:", e);
                 }
                 return true;
             }
@@ -241,35 +246,35 @@ if (!file_exists($cartridge['rom_path'])) {
                     nes.loadROM(rom_data);
                     window.requestAnimationFrame(onAnimationFrame);
                 } catch (e) {
-                    console.error("Erro ao carregar ROM no JSNES:", e);
-                    document.getElementById('emulator').innerHTML = '<p style="color:red;">Erro ao processar o arquivo ROM. Formato inválido?</p>';
+                    document.getElementById('emulator').innerHTML = '<p style="color:red;">Erro ao processar o arquivo ROM.</p>';
                 }
-            }
-
-            function nes_load_data(rom_data) {
-                nes_boot(rom_data);
             }
 
             function nes_load_url(url) {
                 var req = new XMLHttpRequest();
                 req.open("GET", url);
                 req.overrideMimeType("text/plain; charset=x-user-defined");
-                var errorMsg = `Erro ${req.status} ao carregar ROM: ${url}. Verifique se o caminho está correto e o arquivo existe no servidor.`;
                 req.onerror = () => {
-                    console.error(errorMsg + ' (Erro de Rede)');
-                    document.getElementById('emulator').innerHTML = `<p style="color:red;">Falha ao carregar ROM (Erro de Rede). Verifique a URL e a conexão.</p>`;
+                    document.getElementById('emulator').innerHTML = `<p style="color:red;">Falha ao carregar ROM (Erro de Rede).</p>`;
                 };
                 req.onload = function() {
                     if (req.status === 200) {
-                        console.log("ROM carregada com sucesso via XHR.");
-                        nes_load_data(req.responseText);
+                        nes_boot(req.responseText);
                     } else {
-                        console.error(errorMsg + ` Status: ${req.statusText} (${req.status})`);
-                        document.getElementById('emulator').innerHTML = `<p style="color:red;">Falha ao carregar ROM (${req.status} ${req.statusText}).<br>Verifique se o arquivo existe em '${url}' no servidor.</p>`;
+                        document.getElementById('emulator').innerHTML = `<p style="color:red;">Falha ao carregar ROM (${req.status}).</p>`;
                     }
                 };
                 req.send();
             }
+
+            function resumeAudioContext() {
+                if (audio_ctx && audio_ctx.state === 'suspended') {
+                    audio_ctx.resume();
+                }
+            }
+            document.addEventListener('click', resumeAudioContext);
+            document.addEventListener('keydown', resumeAudioContext);
+            document.addEventListener('touchstart', resumeAudioContext);
 
             var container = document.getElementById('emulator');
             container.innerHTML = '<canvas id="nes-canvas" width="' + SCREEN_WIDTH + '" height="' + SCREEN_HEIGHT + '" style="width: 100%; image-rendering: pixelated; background-color: black;"></canvas>';
@@ -281,8 +286,7 @@ if (!file_exists($cartridge['rom_path'])) {
         }
 
         if (typeof jsnes === 'undefined' || typeof jsnes.NES === 'undefined') {
-            document.getElementById('emulator').innerHTML = '<p style="color:red; font-weight: bold;">Erro Crítico: Biblioteca JSNES não carregada. Verifique o caminho do arquivo /js/jsnes.min.js.</p>';
-            console.error('jsnes não está definido. Verifique se /js/jsnes.min.js está acessível.');
+            document.getElementById('emulator').innerHTML = '<p style="color:red; font-weight: bold;">Erro Crítico: Biblioteca JSNES não carregada.</p>';
         } else {
             startEmulator();
         }

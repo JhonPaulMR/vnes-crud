@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RetroGames - Cartridge Manager</title>
+    <title>VNES - Cartridge Manager</title>
     <link rel="stylesheet" href="assets/css/style.css?v=1.1">
 </head>
 <body>
     <header>
         <div class="logo">
             <a href="index.php">
-                <img src="assets/images/logo.png" alt="RetroGames Logo">
+                <img src="assets/images/logo.png" alt="VNES Logo">
             </a>
         </div>
         <nav>
