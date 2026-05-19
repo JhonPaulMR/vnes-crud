@@ -1,0 +1,62 @@
+image: php:8.2-cli
+
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  MYSQL_DATABASE: vnes_db
+  MYSQL_ROOT_PASSWORD: root
+  DB_HOST: mysql
+  DB_DATABASE: vnes_db
+  DB_USERNAME: root
+  DB_PASSWORD: root
+
+build-job:
+  stage: build
+  script:
+    - echo "Instalando dependências e verificando sintaxe..."
+    - find . -name "*.php" -exec php -l {} \;
+    - echo "Build e verificação de sintaxe concluídos."
+
+test-job:
+  stage: test
+  services:
+    - mysql:8.0
+  before_script:
+    - docker-php-ext-install mysqli
+    - docker-php-ext-enable mysqli
+    - apt-get update && apt-get install -y default-mysql-client
+    - sleep 10
+    - mysql -h mysql -u root -proot vnes_db < init.sql
+  script:
+    - echo "Rodando testes unitários e de integração..."
+    - php tests/test_database.php
+    - php tests/test_pages.php
+
+lint-job:
+  stage: test
+  script:
+    - echo "Rodando o Diferencial (Passo V) - Análise Estática com PHPCS..."
+    - curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
+    - php phpcs.phar --version
+    - php phpcs.phar --standard=PSR12 index.php create.php edit.php delete.php play.php || true
+    - echo "Análise estática concluída."
+
+deploy-job:
+  stage: deploy
+  before_script:
+    - apt-get update -qq && apt-get install -qqy openssh-client rsync
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+  script:
+    - echo "Realizando deploy para o servidor $SERVER_IP..."
+    - rsync -avz --exclude='.git' --exclude='.gitlab-ci.yml' --exclude='tests' ./ $SERVER_USER@$SERVER_IP:/var/www/html/
+    - echo "Deploy concluído com sucesso!"
+  only:
+    - main
+    - master

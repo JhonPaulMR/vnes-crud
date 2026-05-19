@@ -1,14 +1,10 @@
 <?php
-// Inicia a sessão no topo do arquivo. Essencial para passar mensagens entre páginas.
 session_start();
 
-// Inclui funções e a conexão com o banco. Estes arquivos não devem gerar HTML.
 require_once "includes/functions.php";
-require_once "config/database.php"; // Adicionei a conexão aqui
+require_once "config/database.php";
 
-// Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validações... (seu código de validação está bom)
     if (empty($_POST["name"])) {
         $message = "Cartridge name is required.";
         $messageType = "error";
@@ -19,7 +15,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $message = "ROM file is required.";
         $messageType = "error";
     } else {
-        // Lógica de upload... (seu código de upload está bom)
         $coverUpload = uploadFile($_FILES["cover_image"], "uploads/covers/", ["jpg", "jpeg", "png", "gif"]);
         
         if (!$coverUpload["success"]) {
@@ -33,7 +28,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $message = $romUpload["message"];
                 $messageType = "error";
             } else {
-                // Inserção no banco...
                 $name = $_POST["name"];
                 $coverPath = $coverUpload["path"];
                 $romPath = $romUpload["path"];
@@ -43,14 +37,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->bind_param("sss", $name, $coverPath, $romPath);
                 
                 if ($stmt->execute()) {
-                    // SUCESSO! Salva a mensagem na SESSÃO e redireciona.
                     $_SESSION['message'] = "Cartridge created successfully!";
                     $_SESSION['message_type'] = "success";
                     
                     header("Location: index.php");
-                    exit(); // Garante que o script pare aqui e o redirecionamento ocorra.
+                    exit();
                 } else {
-                    // Erro no banco...
                     deleteFile($coverUpload["path"]);
                     deleteFile($romUpload["path"]);
                     $message = "Error: " . $stmt->error;
@@ -67,7 +59,7 @@ include "includes/header.php";
 <section class="create-cartridge">
     <h1>Add New Cartridge</h1>
     
-    <?php if (!empty($message)): // Esta parte agora só exibirá mensagens de ERRO ?>
+    <?php if (!empty($message)): ?>
         <div class="message <?php echo $messageType; ?>">
             <?php echo htmlspecialchars($message); ?>
         </div>

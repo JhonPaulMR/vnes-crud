@@ -1,31 +1,24 @@
 <?php
-// Garanta que a conexão com o banco de dados seja estabelecida aqui ou através de um arquivo antes de functions.php
-// Se config/database.php contiver apenas código PHP e não gerar saída, você pode incluí-lo aqui também.
-// Exemplo:
 require_once "config/database.php";
 require_once "includes/functions.php";
 
 $message = "";
 $messageType = "";
 
-// Check if ID is provided
 if (!isset($_GET["id"]) || empty($_GET["id"])) {
     header("Location: index.php");
     exit();
 }
 
 $id = $_GET["id"];
-$cartridge = getCartridgeById($conn, $id); // A $conn precisa estar disponível aqui
+$cartridge = getCartridgeById($conn, $id);
 
-// Check if cartridge exists
 if (!$cartridge) {
     header("Location: index.php");
     exit();
 }
 
-// Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validate input
     if (empty($_POST["name"])) {
         $message = "Cartridge name is required.";
         $messageType = "error";
@@ -36,7 +29,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $updateCover = false;
         $updateRom = false;
 
-        // Check if new cover image is uploaded
         if (isset($_FILES["cover_image"]) && $_FILES["cover_image"]["error"] != UPLOAD_ERR_NO_FILE) {
             $coverUpload = uploadFile($_FILES["cover_image"], "uploads/covers/", ["jpg", "jpeg", "png", "gif"]);
 
@@ -49,15 +41,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
 
-        // Check if new ROM file is uploaded
         if (isset($_FILES["rom_file"]) && $_FILES["rom_file"]["error"] != UPLOAD_ERR_NO_FILE) {
-            // Se já houve erro no upload da capa, não prossegue com o ROM
-            if (empty($message)) { // Adiciona esta verificação
+            if (empty($message)) {
                 $romUpload = uploadFile($_FILES["rom_file"], "uploads/roms/", ["nes"]);
 
                 if (!$romUpload["success"]) {
                     if ($updateCover) {
-                        // Delete the newly uploaded cover image if ROM upload fails
                         deleteFile($coverPath);
                     }
                     $message = $romUpload["message"];
@@ -69,15 +58,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
 
-        // Only proceed with database update if no errors occurred so far
         if (empty($message)) {
-            // Update data in database
             $sql = "UPDATE cartridges SET name = ?, cover_image = ?, rom_path = ? WHERE id = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("sssi", $name, $coverPath, $romPath, $id);
 
             if ($stmt->execute()) {
-                // Delete old files if new ones were uploaded
                 if ($updateCover) {
                     deleteFile($cartridge["cover_image"]);
                 }
@@ -86,14 +72,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     deleteFile($cartridge["rom_path"]);
                 }
 
-                // $message = "Cartridge updated successfully!"; // Esta mensagem não será vista por causa do redirecionamento
-                // $messageType = "success";
-
-                // Redirect to home page after successful update
                 header("Location: index.php?status=success&message=" . urlencode("Cartridge updated successfully!"));
                 exit();
             } else {
-                // Delete the newly uploaded files if database update fails
                 if ($updateCover) {
                     deleteFile($coverPath);
                 }
@@ -109,7 +90,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Inclua o cabeçalho somente depois de toda a lógica de redirecionamento e manipulação de cabeçalhos
 include "includes/header.php";
 ?>
 
