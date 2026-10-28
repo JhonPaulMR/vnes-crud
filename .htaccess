@@ -2,7 +2,7 @@
 RewriteEngine On
 
 # Set base directory
-RewriteBase /retrogames/
+RewriteBase /
 
 # Prevent direct access to certain directories
 RewriteRule ^includes/ - [F,L]

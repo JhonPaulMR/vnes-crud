@@ -51,3 +51,14 @@ Está é uma aplicação web de um crud simples para gerenciar e jogar ROMs de j
 * **X:** Botão A
 * **Enter:** Start
 * **Shift:** Select
+
+## Implantação na nuvem privada (OpenStack)
+
+A branch `cloud-openstack` contém a implantação da aplicação em uma nuvem privada OpenStack (domínio `vnes.com.br`). A documentação está em `docs/` e os arquivos de infraestrutura (provisionamento e configuração) estão em `infra/`.
+
+Para desenvolvimento local, continue usando o docker-compose descrito acima. As variáveis de ambiente ficam em `.env`: copie `.env.example` para `.env` e ajuste os valores (o `.env` não é versionado):
+
+```bash
+cp .env.example .env
+docker-compose up -d --build
+```

@@ -98,11 +98,11 @@ include "includes/header.php";
 
     <?php if (!empty($message)): ?>
         <div class="message <?php echo $messageType; ?>">
-            <?php echo $message; ?>
+            <?php echo htmlspecialchars($message); ?>
         </div>
     <?php endif; ?>
 
-    <form action="edit.php?id=<?php echo $id; ?>" method="post" enctype="multipart/form-data">
+    <form action="edit.php?id=<?php echo (int)$id; ?>" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="name">Cartridge Name:</label>
             <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($cartridge['name']); ?>" required>

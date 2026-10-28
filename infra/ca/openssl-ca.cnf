@@ -1,0 +1,21 @@
+# openssl-ca.cnf - extensoes usadas pelos scripts da CA VNES
+# (os scripts copiam/leem este arquivo; nao precisa de [ca] database)
+
+[ req_dn ]
+C  = BR
+O  = VNES
+CN = VNES Root CA
+
+[ v3_root_ca ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always
+basicConstraints       = critical, CA:TRUE
+keyUsage               = critical, keyCertSign, cRLSign
+
+[ v3_wildcard ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid,issuer
+basicConstraints       = critical, CA:FALSE
+keyUsage               = critical, digitalSignature, keyEncipherment
+extendedKeyUsage       = serverAuth
+subjectAltName         = DNS:*.vnes.com.br, DNS:vnes.com.br

@@ -1,0 +1,28 @@
+// /etc/bind/named.conf.options  -  Bind9 da vnes-infra (ns1.vnes.com.br)
+
+// Quem pode usar este servidor como DNS recursivo
+acl "vnes-clients" {
+    localhost;
+    192.168.50.0/24;   // rede Hyper-V (Windows, vnes-infra, vnes-cloud)
+    10.10.10.0/24;     // rede privada das instancias OpenStack
+    172.24.4.0/24;     // rede publica (floating IPs) do DevStack
+};
+
+options {
+    directory "/var/cache/bind";
+
+    // Encaminha o que nao for da zona vnes.com.br
+    forwarders {
+        1.1.1.1;
+        8.8.8.8;
+    };
+
+    recursion yes;
+    allow-query { any; };            // zona autoritativa e publica na rede do lab
+    allow-recursion { vnes-clients; };
+
+    dnssec-validation auto;
+
+    listen-on { any; };
+    listen-on-v6 { any; };
+};

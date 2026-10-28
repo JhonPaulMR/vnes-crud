@@ -1,313 +1,517 @@
-/* Reset and base styles */
-* {
+/* ==========================================================================
+   VNES - Cartridge Manager
+   Retro NES store theme. Pure CSS, system fonts only (the CSP in .htaccess
+   blocks external stylesheets/fonts).
+   ========================================================================== */
+
+:root {
+    --bg: #14141a;
+    --bg-2: #1c1c25;
+    --surface: #24242f;
+    --surface-2: #2e2e3b;
+    --border: #3d3d4f;
+    --text: #ecebe4;
+    --text-dim: #a4a3b0;
+    --red: #e4262c;
+    --red-dark: #a8151a;
+    --red-light: #ff5a5f;
+    --gray: #8c8c96;
+    --green: #3ecf5e;
+    --green-dark: #1f8f3a;
+    --blue: #3b8cf5;
+    --blue-dark: #1f5fb8;
+    --amber: #f5b335;
+    --radius: 4px;
+    --shadow-px: 4px 4px 0 #000;
+    --font-body: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --font-pixel: "Courier New", "Lucida Console", ui-monospace, Menlo, Consolas, monospace;
+    --maxw: 1100px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
     margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-    color: #333;
-    background-color: #f7f7f7;
-}
-
-/* Header styles */
-header {
-    background-color: #e40000;
-    color: #fff;
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-html, body {
-    height: 100%; /* Garante que o html e body ocupem 100% da viewport */
-    margin: 0; /* Remove margens padrão do body */
-}
-
-body {
-    display: flex;
-    flex-direction: column; /* Organiza os filhos em coluna */
-}
-
-main {
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--text);
+    background-color: var(--bg);
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+img { max-width: 100%; }
+
+a {
+    color: var(--red-light);
+    text-underline-offset: 3px;
+}
+a:hover { color: #fff; }
+
+:focus-visible {
+    outline: 3px solid var(--amber);
+    outline-offset: 2px;
+}
+
+/* ---------- Header / nav ---------- */
+
+header {
+    background: linear-gradient(180deg, #0c0c10 0%, var(--bg-2) 100%);
+    border-bottom: 4px solid var(--red);
+    box-shadow: 0 4px 0 #000;
+    padding: 0.6rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
-    flex: 1;
-    width: 100%; /* Faz o conteúdo principal ocupar todo o espaço restante */
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    position: relative;
+    z-index: 10;
 }
 
-.cartridges-list, .play-cartridge {
-    width: 100%;
-}
-
+.logo { flex: 0 0 auto; line-height: 0; }
+.logo a { display: inline-block; line-height: 0; border-radius: var(--radius); }
 .logo img {
-    margin-top:0.4rem;
-    max-height: 2rem;
+    display: block;
+    height: 64px;
+    width: auto;
+    max-width: 100%;
+    aspect-ratio: 2 / 1;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.6));
+    transition: transform 0.15s steps(3);
 }
+.logo a:hover img { transform: scale(1.05); }
 
 nav ul {
-    display: flex;
     list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
-
-nav ul li {
-    margin-left: 1.5rem;
-}
-
+nav ul li { margin: 0; }
 nav ul li a {
-    color: #fff;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    font-family: var(--font-pixel);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s;
+    color: var(--text);
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 3px 3px 0 #000;
+    transition: transform 0.1s, background 0.1s, border-color 0.1s;
 }
-
 nav ul li a:hover {
-    color: #ff6b6b;
+    background: var(--red);
+    border-color: var(--red-light);
+    color: #fff;
+    transform: translate(-1px, -1px);
 }
+nav ul li a:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000; }
 
-/* Main content styles */
+/* ---------- Main layout ---------- */
+
 main {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 1rem;
+    flex: 1 0 auto;
+    width: 100%;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 2rem 1rem 3rem;
 }
 
-section {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
-    margin-bottom: 2rem;
-}
+section { width: 100%; }
 
 h1 {
-    color: #333;
-    margin-bottom: 1.5rem;
-    font-size: 2rem;
+    margin: 0 0 1.5rem;
+    padding-bottom: 0.75rem;
+    font-family: var(--font-pixel);
+    font-size: clamp(1.25rem, 4vw, 1.9rem);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow: 3px 3px 0 var(--red-dark);
+    border-bottom: 4px double var(--border);
+    overflow-wrap: anywhere;
 }
+h3 { font-family: var(--font-pixel); margin: 0; }
 
-/* Cartridge grid styles */
+/* ---------- Messages ---------- */
+
+.message {
+    margin: 0 0 1.5rem;
+    padding: 0.85rem 1rem 0.85rem 1.1rem;
+    border: 2px solid var(--border);
+    border-left-width: 8px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow-px);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+.message.success { border-color: var(--green); background: #16301f; color: #c9f5d4; }
+.message.error { border-color: var(--red); background: #3a1517; color: #ffd0d2; }
+
+/* ---------- Cartridge grid ---------- */
+
 .cartridges-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
 }
 
 .cartridge-item {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.3s;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-top: 6px solid var(--gray);
+    border-radius: var(--radius);
+    padding: 0.9rem;
+    box-shadow: var(--shadow-px);
+    position: relative;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
 }
-
-.cartridge-item:hover {
-    transform: translateY(-5px);
+.cartridge-item::before {
+    /* cartridge "notch" */
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    width: 36%;
+    height: 6px;
+    transform: translateX(-50%);
+    background: var(--red);
+}
+.cartridge-item:hover,
+.cartridge-item:focus-within {
+    transform: translate(-3px, -4px);
+    box-shadow: 7px 8px 0 #000;
+    border-color: var(--red);
 }
 
 .cartridge-item img {
+    display: block;
     width: 100%;
-    height: 200px;
+    aspect-ratio: 1 / 1;
     object-fit: cover;
-    margin: 0;
+    background: #000;
+    border: 2px solid #000;
+    border-radius: 2px;
+    image-rendering: pixelated;
+    margin-bottom: 0.8rem;
 }
 
 .cartridge-item h3 {
-    padding: 1rem;
-    font-size: 1.2rem;
-    text-align: center;
+    font-size: 1rem;
+    line-height: 1.3;
+    color: #fff;
+    margin: 0 0 0.9rem;
+    min-height: 2.6em;
+    overflow-wrap: anywhere;
 }
 
 .cartridge-actions {
+    margin-top: auto;
     display: flex;
-    justify-content: space-between;
-    padding: 0 1rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+.cartridge-actions .btn {
+    flex: 1 1 auto;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.75rem;
 }
 
-/* Button styles */
+/* ---------- Buttons ---------- */
+
 .btn {
+    --btn-bg: var(--surface-2);
+    --btn-bg-hover: var(--border);
+    --btn-edge: #000;
     display: inline-block;
-    padding: 0.5rem 1rem;
-    background-color: #e40000;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 4px;
-    font-weight: 500;
-    transition: background-color 0.3s;
-    border: none;
-    cursor: pointer;
+    padding: 0.7rem 1.3rem;
+    font-family: var(--font-pixel);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 1.2;
     text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #fff;
+    background: var(--btn-bg);
+    border: 2px solid var(--btn-edge);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 0 var(--btn-edge), inset 0 2px 0 rgba(255, 255, 255, 0.18);
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s, background 0.1s;
+    -webkit-appearance: none;
+    appearance: none;
+    margin-bottom: 4px;
 }
-
-input[type="file"] {
-    width: 100%;
-    padding: 0.7rem;
-    background-color: transparent;
-    border: 1px solid #000000;
-    color: #000000;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
 .btn:hover {
-    background-color: #e40000;
-    color: #ffffff;
+    background: var(--btn-bg-hover);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 0 var(--btn-edge), inset 0 2px 0 rgba(255, 255, 255, 0.22);
+}
+.btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 var(--btn-edge), inset 0 2px 0 rgba(0, 0, 0, 0.2);
 }
 
-.play-btn {
-    background-color: transparent;
-    border: 1px solid #e40000;
-    color: #e40000;
+.play-btn   { --btn-bg: var(--green-dark); --btn-bg-hover: var(--green); }
+.edit-btn   { --btn-bg: var(--blue-dark);  --btn-bg-hover: var(--blue); }
+.delete-btn { --btn-bg: var(--red-dark);   --btn-bg-hover: var(--red); }
+.submit-btn { --btn-bg: var(--red);        --btn-bg-hover: var(--red-light); }
+.cancel-btn { --btn-bg: #55555f;           --btn-bg-hover: #6e6e7a; }
+
+/* ---------- Forms ---------- */
+
+.create-cartridge form,
+.edit-cartridge form {
+    max-width: 640px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-top: 6px solid var(--red);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-px);
 }
 
-.play-btn:hover {
-    background-color: #e40000;
-    color: #FFFFFF;
-}
+.form-group { margin-bottom: 1.4rem; }
+.form-group:last-child { margin-bottom: 0; display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
 
-.edit-btn {
-    background-color: transparent;
-    border: 1px solid #e40000;
-    color: #e40000;
-}
-
-.edit-btn:hover {
-    background-color: #e40000;
-    color: #FFFFFF;
-}
-
-.delete-btn {
-    background-color: #c50000;
-}
-
-.delete-btn:hover {
-    background-color: #e40000;
-}
-
-.submit-btn {
-    background-color: #e40000;
-    padding: 0.7rem 1.5rem;
-    font-size: 1rem;
-}
-
-.cancel-btn {
-    background-color: transparent;
-    border: 1px solid #e40000;
-    color: #e40000;
-    padding: 0.7rem 1.5rem;
-    font-size: 1rem;
-}
-
-/* Form styles */
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-label {
+.form-group label {
     display: block;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
+    font-family: var(--font-pixel);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text);
 }
 
-input[type="text"] {
+.form-group input[type="text"] {
     width: 100%;
-    padding: 0.7rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
+    padding: 0.7rem 0.8rem;
+    font: inherit;
+    color: var(--text);
+    background: #0d0d12;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.6);
+    transition: border-color 0.15s;
+}
+.form-group input[type="text"]:hover { border-color: var(--gray); }
+.form-group input[type="text"]:focus,
+.form-group input[type="text"]:focus-visible {
+    outline: none;
+    border-color: var(--amber);
+    box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.6), 0 0 0 3px rgba(245, 179, 53, 0.35);
 }
 
-small {
-    color: #7f8c8d;
+.form-group input[type="file"] {
+    width: 100%;
+    padding: 0.5rem;
+    font: inherit;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    background: #0d0d12;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+.form-group input[type="file"]:hover { border-color: var(--gray); }
+.form-group input[type="file"]:focus-visible { border-color: var(--amber); }
+.form-group input[type="file"]::file-selector-button {
+    margin-right: 0.8rem;
+    padding: 0.5rem 0.9rem;
+    font-family: var(--font-pixel);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--red);
+    border: 2px solid #000;
+    border-radius: var(--radius);
+    box-shadow: 0 3px 0 #000;
+    cursor: pointer;
+}
+.form-group input[type="file"]::file-selector-button:hover { background: var(--red-light); }
+
+.form-group small {
+    display: block;
+    margin-top: 0.35rem;
     font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.form-group p {
+    margin: 0;
+    padding: 0.55rem 0.8rem;
+    font-family: var(--font-pixel);
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    background: #0d0d12;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    overflow-wrap: anywhere;
 }
 
 .current-image {
-    max-width: 200px;
-    margin-bottom: 1rem;
+    display: block;
+    width: 100%;
+    max-width: 220px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    background: #000;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-px);
+    image-rendering: pixelated;
 }
 
-/* Message styles */
-.message {
-    padding: 1rem;
-    border-radius: 4px;
-    margin-bottom: 1.5rem;
+#cover_preview {
+    display: none;
+    max-width: 220px;
+    margin-top: 0.75rem;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
 }
 
-.success {
-    background-color: #d4edda;
-    color: #ff0000;
-    border: 1px solid #c3e6cb;
+/* ---------- Play page ---------- */
+
+.play-cartridge .game-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto 1.5rem;
+    padding: 14px;
+    background: #0b0b0f;
+    border: 4px solid #000;
+    border-radius: 12px;
+    box-shadow: 0 0 0 4px var(--gray), 0 0 0 8px #000, 8px 10px 0 8px rgba(0, 0, 0, 0.6);
 }
 
-.error {
-    background-color: #f8d7da;
-    color: #000000;
-    border: 1px solid #f5c6cb;
-}
-
-/* Play game styles */
-.game-container {
-    margin: 2rem 0;
+#emulator {
+    width: 100%;
+    aspect-ratio: 256 / 240;
+    max-height: 75vh;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    color: var(--text-dim);
+    font-family: var(--font-pixel);
     text-align: center;
+    border-radius: 4px;
+    overflow: hidden;
+}
+#emulator p { margin: 0; padding: 1rem; }
+#emulator canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: pixelated;
+    background: #000;
 }
 
 .controls-info {
-    background-color: #f8f9fa;
-    padding: 1rem;
-    border-radius: 4px;
-    margin-bottom: 2rem;
+    max-width: 800px;
+    margin: 0 auto 1.5rem;
+    padding: 1.1rem 1.4rem;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-left: 8px solid var(--amber);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-px);
 }
-
+.controls-info h3 {
+    margin-bottom: 0.7rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--amber);
+}
 .controls-info ul {
-    list-style-position: inside;
-    margin-top: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 0.5rem 1rem;
+}
+.controls-info li {
+    padding: 0.4rem 0.7rem;
+    font-family: var(--font-pixel);
+    font-size: 0.85rem;
+    background: #0d0d12;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
 }
 
 .back-button {
-    text-align: center;
-}
-
-/* Footer styles */
-footer {
-    background-color: #e40000;
-    color: #fff;
-    text-align: center;
-    padding: 1.5rem;
-}
-
-/* Responsive adjustments */
-@media screen and (max-width: 768px) {
-    .cartridges-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1rem;
-    }
-    
-    header {
-        flex-direction: column;
-        padding: 1rem;
-    }
-    
-    nav ul {
-        margin-top: 1rem;
-    }
-    
-    nav ul li {
-        margin-left: 1rem;
-        margin-right: 1rem;
-    }
-}
-
-/* Emulator specific styles */
-#nes-canvas {
-    border: 2px solid #232323;
+    max-width: 800px;
     margin: 0 auto;
-    display: block;
-    height: auto;
-    max-width: 55%;
+    text-align: center;
+}
+
+/* ---------- Footer ---------- */
+
+footer {
+    flex-shrink: 0;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    background: #0c0c10;
+    border-top: 4px solid var(--red);
+    color: var(--text-dim);
+    font-family: var(--font-pixel);
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+}
+footer p { margin: 0; overflow-wrap: anywhere; }
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 640px) {
+    header { justify-content: center; text-align: center; }
+    .logo img { height: 52px; }
+    nav ul { justify-content: center; }
+    nav ul li a { padding: 0.45rem 0.75rem; font-size: 0.75rem; }
+    main { padding: 1.25rem 0.75rem 2rem; }
+    .cartridges-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+    .create-cartridge form, .edit-cartridge form { padding: 1rem; }
+    .play-cartridge .game-container { padding: 8px; box-shadow: 0 0 0 3px var(--gray), 0 0 0 6px #000; }
+    .form-group:last-child .btn { flex: 1 1 100%; }
+}
+
+@media (max-width: 400px) {
+    .cartridges-grid { grid-template-columns: 1fr; }
+    .logo img { height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
 }

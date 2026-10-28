@@ -1,0 +1,32 @@
+; /etc/bind/zones/db.vnes.com.br  -  zona direta da VNES
+; O numero de serie (linha "; serial") e atualizado pelo atualizar-registro.sh
+$TTL    300
+@       IN      SOA     ns1.vnes.com.br. admin.vnes.com.br. (
+                        2026102801      ; serial (YYYYMMDDNN)
+                        3600            ; refresh
+                        900             ; retry
+                        604800          ; expire
+                        300 )           ; negative cache TTL
+
+; --- Servidor de nomes ---
+@       IN      NS      ns1.vnes.com.br.
+
+; --- Infraestrutura (Hyper-V) ---
+ns1     IN      A       192.168.50.10
+ca      IN      A       192.168.50.10
+cloud   IN      A       192.168.50.20
+
+; --- Instancias OpenStack ---
+; !!! TROCAR pela floating IP da vnes-web (rede 172.24.4.0/24) !!!
+; Use:  ./atualizar-registro.sh www <floating-ip>   e   ./atualizar-registro.sh @ <floating-ip>
+; (172.24.4.100 abaixo e apenas um valor de exemplo)
+www     IN      A       172.24.4.100
+@       IN      A       172.24.4.100
+
+; !!! TROCAR pelo IP privado da vnes-db (rede 10.10.10.0/24) !!!
+; Use:  ./atualizar-registro.sh db <ip-privado>
+; (10.10.10.100 abaixo e apenas um valor de exemplo)
+db      IN      A       10.10.10.100
+
+; --- Qualquer outro subdominio aponta para o site ---
+*       IN      CNAME   www
