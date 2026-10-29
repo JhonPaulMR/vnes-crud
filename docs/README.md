@@ -77,7 +77,7 @@ O DevStack ocupa 5 a 6 GB; cada instância `vnes.small` usa 1 GB. A sobra do Win
 - Memória das VMs é **estática** (obrigatório para virtualização aninhada); não altere para dinâmica.
 - Disco: ~130 GB de VHDX dinâmico em `E:\HyperV\VNES` (padrão) + 10 GB para vídeo.
 - Notebook ligado na tomada, plano "Alto desempenho". Evite hibernar com as VMs rodando.
-- Ordem de ligar: `vnes-infra`, depois `vnes-cloud`. Ordem de desligar: `sudo shutdown -h now` na `vnes-cloud`, depois na `vnes-infra`.
+- Ordem de ligar: `vnes-infra`, depois `vnes-cloud`; de desligar: instâncias, `vnes-cloud`, `vnes-infra`. Use `infra/hyperv/05-desligar-nuvem.ps1` e `06-ligar-nuvem.ps1` (comandos manuais em `03-ambiente.md`, "Desligar e ligar a nuvem").
 
 ## Avisos importantes
 

@@ -50,6 +50,7 @@ sudo systemctl restart apache2
 ```
 
 Para tornar permanente use `./04-persistir-nat.sh` (instala `99-vnes-ipforward.conf` em `/etc/sysctl.d/` e a unidade `vnes-nat.service`, que no boot reaplica o IP do `br-ex` e a regra MASQUERADE; sem `iptables-persistent`, que poderia gravar as regras do DevStack).
+Para a nuvem voltar sozinha após religar a VM, rode também `sudo ./05-autostart.sh` (`resume_guests_state_on_host_boot = True` no `/etc/nova/nova-cpu.conf`, `devstack@*` habilitados, `vnes-nat.service` depois do OVS/OVN com espera pelo `br-ex`). Scripts do Windows: `infra/hyperv/05-desligar-nuvem.ps1` e `06-ligar-nuvem.ps1`.
 Não use `unstack.sh`/`clean.sh` se não for preciso refazer tudo.
 
 ## Observações sobre HTTPS

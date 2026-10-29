@@ -409,6 +409,32 @@ Para tornar permanente: `sudo apt install iptables-persistent`, `sudo netfilter-
 Não use `unstack.sh`/`clean.sh` se não precisar refazer tudo.
 Ordem de ligar após desligar tudo: `vnes-infra` primeiro, depois `vnes-cloud`.
 
+### Desligar e ligar a nuvem
+
+Use os dois scripts (PowerShell como Administrador, em `infra\hyperv`):
+
+```powershell
+.\05-desligar-nuvem.ps1   # para vnes-web/vnes-db, desliga vnes-cloud e depois vnes-infra
+.\06-ligar-nuvem.ps1      # liga vnes-infra, vnes-cloud, espera Keystone/Horizon, liga instancias e espera o site (~1 a 6 min)
+```
+
+Eles usam `ssh -i $HOME\.ssh\vnes-admin ubuntu@192.168.50.20`. Se o `06` avisar falta de RAM, feche Docker Desktop (`wsl --shutdown`), Teams, IDEs e navegadores e rode de novo.
+O boot automatico depende de `infra/devstack/05-autostart.sh` (ja aplicado na `vnes-cloud`): `resume_guests_state_on_host_boot = True` no `nova-cpu.conf`, unidades `devstack@*` habilitadas e `vnes-nat.service` apos o OVS/OVN.
+
+Equivalente manual:
+
+```powershell
+# desligar
+ssh -i $HOME\.ssh\vnes-admin ubuntu@192.168.50.20 "sudo -u stack -i bash -c 'source ~/devstack/openrc admin admin; openstack server stop vnes-web vnes-db'"   # use os IDs se o nome nao for encontrado (--all-projects server list)
+Stop-VM vnes-cloud; Stop-VM vnes-infra
+# ligar
+Start-VM vnes-infra      # espere o DNS (192.168.50.10:53)
+Start-VM vnes-cloud      # espere http://192.168.50.20/identity/v3/ responder 200
+# se as instancias estiverem SHUTOFF: openstack server start vnes-db vnes-web
+```
+
+Restore point se algo quebrar: `Restore-VMSnapshot -VMName vnes-cloud -Name deploy-ok -Confirm:$false` (idem `vnes-infra`).
+
 ### DNS não resolve
 
 | Onde | Teste | Se falhar |
