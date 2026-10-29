@@ -31,9 +31,9 @@ $rota = Get-NetRoute -DestinationPrefix $Destino -ErrorAction SilentlyContinue |
 if ($rota) {
     Write-Host "    Rota ja existe. Pulando." -ForegroundColor Yellow
 } else {
-    # PolicyStore Persistent = sobrevive a reinicios
+    # Sem -PolicyStore a rota vai para o ActiveStore e o PersistentStore (sobrevive a reinicios)
     New-NetRoute -DestinationPrefix $Destino -InterfaceAlias $Alias -NextHop $Gateway `
-                 -PolicyStore PersistentStore | Out-Null
+                 -ErrorAction Stop | Out-Null
     Write-Host "    Rota criada (persistente)." -ForegroundColor Green
 }
 
