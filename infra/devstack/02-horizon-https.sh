@@ -134,8 +134,8 @@ curl -sS -I --cacert "$CACERT" --resolve "${FQDN}:443:127.0.0.1" "https://${FQDN
   echo "AVISO: curl falhou; veja ${LOGDIR}/horizon_ssl_error.log (CA raiz em $CA_ROOT?)"
 echo "--- Redirecionamento HTTP -> HTTPS (por nome)"
 curl -sS -I --resolve "${FQDN}:80:127.0.0.1" "http://${FQDN}/dashboard" | grep -Ei '^(HTTP|Location)' || true
-echo "--- API do Keystone por IP deve continuar em HTTP (esperado 200)"
-curl -sS -o /dev/null -w 'HTTP %{http_code}\n' http://192.168.50.20/identity/
+echo "--- API do Keystone por IP deve continuar em HTTP (esperado 200; /identity/ sem versao devolve 300)"
+curl -sS -o /dev/null -w 'HTTP %{http_code}\n' http://192.168.50.20/identity/v3/
 
 echo
 echo "Pronto. Abra https://${FQDN}/dashboard (usuario: admin, dominio: Default)."

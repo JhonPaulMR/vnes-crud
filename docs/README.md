@@ -65,7 +65,7 @@ Critérios de avaliação: **CRIT01** (todos os requisitos) -> tabela acima; **C
 
 | Consumidor | RAM |
 |---|---|
-| `vnes-cloud` (DevStack, estática) | 11 GB |
+| `vnes-cloud` (DevStack, estática) | 6 GB (+ 4 GB swap no Linux) |
 | `vnes-infra` (Bind + CA) | 1 GB |
 | Windows 11 + navegador + gravador (sobra) | ~3 GB |
 

@@ -45,7 +45,7 @@ flowchart TB
 |---|---|---|---|
 | Windows (cliente) | 192.168.50.1 | - | gateway/NAT das VMs; rota `172.24.4.0/24` via `192.168.50.20` |
 | `vnes-infra` | 192.168.50.10 | `ns1.vnes.com.br`, `ca.vnes.com.br` | Bind9 + CA (2 vCPU, 1 GB) |
-| `vnes-cloud` | 192.168.50.20 | `cloud.vnes.com.br` | DevStack, Horizon HTTPS (4 vCPU, 11 GB, nested virt) |
+| `vnes-cloud` | 192.168.50.20 | `cloud.vnes.com.br` | DevStack, Horizon HTTPS (4 vCPU, 6 GB, nested virt) |
 | `public` (br-ex) | 172.24.4.0/24, gw 172.24.4.1 | - | floating IPs |
 | `vnes-net` | 10.10.10.0/24 | - | rede privada do projeto `vnes`, DNS `192.168.50.10` |
 | `vnes-web` | 10.10.10.x + floating 172.24.4.y | `www.vnes.com.br`, `vnes.com.br` | `sg-web` (22, 80, 443, ICMP) |

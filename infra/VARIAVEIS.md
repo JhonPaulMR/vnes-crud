@@ -21,7 +21,7 @@ Todos os arquivos de `infra/` e `docs/` usam estes valores. Se mudar algum, mude
 |---|---|---|---|---|
 | Windows (cliente) | 192.168.50.1 | — | — | Windows 11 |
 | VM `vnes-infra` | 192.168.50.10 | `ns1.vnes.com.br`, `ca.vnes.com.br` | 2 vCPU, 1 GB RAM, 20 GB | Ubuntu Server 24.04 |
-| VM `vnes-cloud` | 192.168.50.20 | `cloud.vnes.com.br` | 4 vCPU, 11 GB RAM (estática), 100 GB, nested virt | Ubuntu Server 24.04 + DevStack |
+| VM `vnes-cloud` | 192.168.50.20 | `cloud.vnes.com.br` | 4 vCPU, 6 GB RAM (estática) + 4 GB swap, 100 GB, nested virt | Ubuntu Server 24.04 + DevStack |
 | Instância `vnes-web` | floating IP em `172.24.4.0/24` (anotar) + privado `10.10.10.x` | `www.vnes.com.br`, `vnes.com.br` | flavor `vnes.small` | Ubuntu 24.04 cloud image |
 | Instância `vnes-db` | só privado `10.10.10.x` (sem floating IP) | `db.vnes.com.br` | flavor `vnes.small` | Ubuntu 24.04 cloud image |
 

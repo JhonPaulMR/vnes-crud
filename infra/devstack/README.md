@@ -10,9 +10,10 @@ Se der problema, rode o passo 1 com `DEVSTACK_BRANCH=stable/2026.1` (Gazpacho).
 2. `sudo -u stack -i` e depois `cd devstack && ./stack.sh` (40 a 70 minutos; use `tmux`).
 3. Copie da `vnes-infra` o certificado e a chave para `/etc/ssl/vnes/` (nomes em `infra/VARIAVEIS.md`) e rode `./02-horizon-https.sh`.
 4. Como `stack`: `./03-preparar-admin.sh` (imagem `ubuntu-24.04`, flavor `vnes.small`, projeto `vnes`, usuário `vnes-devops`).
-5. Siga para `infra/openstack/` (Horizon como `vnes-devops`, ou o script de plano B).
+5. `sudo ./04-persistir-nat.sh`: torna permanentes o `ip_forward`, o IP do `br-ex` e a regra de NAT (ver abaixo).
+6. Siga para `infra/openstack/` (Horizon como `vnes-devops`, ou o script de plano B).
 
-## Memória (VM com 11 GB)
+## Memória (VM com 6 GB + 4 GB de swap; o host tem 15 GB e não sobra mais)
 
 - Desligados no `local.conf`: Tempest, Cinder e Swift. Mantidos: Keystone, Glance, Placement, Nova, Neutron (OVN), Horizon.
 - Sem imagem cirros (`DOWNLOAD_DEFAULT_IMAGES=False`); a única imagem é a Ubuntu 24.04.
@@ -48,8 +49,7 @@ sudo iptables -t nat -C POSTROUTING -o eth0 -s 172.24.4.0/24 -j MASQUERADE 2>/de
 sudo systemctl restart apache2
 ```
 
-Para tornar permanente: `sudo apt install iptables-persistent` e `sudo netfilter-persistent save`
-(e `net.ipv4.ip_forward=1` em `/etc/sysctl.d/99-vnes.conf`).
+Para tornar permanente use `./04-persistir-nat.sh` (instala `99-vnes-ipforward.conf` em `/etc/sysctl.d/` e a unidade `vnes-nat.service`, que no boot reaplica o IP do `br-ex` e a regra MASQUERADE; sem `iptables-persistent`, que poderia gravar as regras do DevStack).
 Não use `unstack.sh`/`clean.sh` se não for preciso refazer tudo.
 
 ## Observações sobre HTTPS

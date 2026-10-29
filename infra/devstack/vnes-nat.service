@@ -1,0 +1,14 @@
+[Unit]
+Description=VNES - br-ex 172.24.4.1/24 e NAT (MASQUERADE) da rede publica do DevStack
+After=network-online.target openvswitch-switch.service ovs-vswitchd.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'sysctl -w net.ipv4.ip_forward=1'
+ExecStart=/bin/sh -c 'ip link show br-ex >/dev/null 2>&1 && { ip addr show dev br-ex | grep -q "172.24.4.1/24" || ip addr add 172.24.4.1/24 dev br-ex; ip link set br-ex up; } || true'
+ExecStart=/bin/sh -c 'iptables -t nat -C POSTROUTING -s 172.24.4.0/24 -o eth0 -j MASQUERADE || iptables -t nat -A POSTROUTING -s 172.24.4.0/24 -o eth0 -j MASQUERADE'
+
+[Install]
+WantedBy=multi-user.target

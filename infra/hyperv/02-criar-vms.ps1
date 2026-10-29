@@ -74,7 +74,7 @@ function Novo-VnesVM {
 }
 
 Novo-VnesVM -Nome 'vnes-infra' -VCpu 2 -Memoria 1GB  -Disco 20GB  -Nested $false
-Novo-VnesVM -Nome 'vnes-cloud' -VCpu 4 -Memoria 11GB -Disco 100GB -Nested $true
+Novo-VnesVM -Nome 'vnes-cloud' -VCpu 4 -Memoria 6GB -Disco 100GB -Nested $true
 
 Write-Host ""
 Write-Host "Resumo das VMs:" -ForegroundColor Green

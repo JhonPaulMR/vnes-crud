@@ -29,7 +29,7 @@ cd "E:\Codes\Trabalho Cloud\vnes-crud\infra\hyperv"
 # opcional: -CaminhoVMs "D:\HyperV\VNES" (padrão E:\HyperV\VNES)
 ```
 
-O que faz: vSwitch interno `VNES-NET`, IP `192.168.50.1/24` no Windows, NAT `VNES-NAT`; VMs Gen2 `vnes-infra` (2 vCPU, 1 GB, 20 GB) e `vnes-cloud` (4 vCPU, 11 GB estática, 100 GB, virtualização aninhada + MAC spoofing).
+O que faz: vSwitch interno `VNES-NET`, IP `192.168.50.1/24` no Windows, NAT `VNES-NAT`; VMs Gen2 `vnes-infra` (2 vCPU, 1 GB, 20 GB) e `vnes-cloud` (4 vCPU, 6 GB estática, 100 GB, virtualização aninhada + MAC spoofing).
 
 **Checkpoint 1**
 
@@ -42,6 +42,16 @@ Get-VM vnes-infra, vnes-cloud | Select Name, State, ProcessorCount, @{N='MemGB';
 ```
 
 ## 2. Instalar o Ubuntu Server na `vnes-infra`
+
+> **Caminho usado no projeto: instalação automática (autoinstall).** O instalador do Ubuntu 24.04 trava com 1 GB de RAM, então o script sobe a VM com 2 GB só durante a instalação, anexa um disco `CIDATA` com as respostas (`infra/autoinstall/user-data.tpl`) e confirma o autoinstall sozinho. O IP, o hostname, o usuário `ubuntu`, a chave SSH e o sudo sem senha já saem configurados.
+>
+> ```powershell
+> $hash = & "C:\Program Files\Git\usr\bin\openssl.exe" passwd -6 'SuaSenha'
+> .\04-instalar-ubuntu-auto.ps1 -VmName vnes-infra -Hostname ns1   -Ip 192.168.50.10 -ChavePublica "$HOME\.ssh\vnes-admin.pub" -SenhaHash $hash
+> .\04-instalar-ubuntu-auto.ps1 -VmName vnes-cloud -Hostname cloud -Ip 192.168.50.20 -ChavePublica "$HOME\.ssh\vnes-admin.pub" -SenhaHash $hash
+> ```
+>
+> A instalação manual abaixo fica como alternativa.
 
 🪟
 
