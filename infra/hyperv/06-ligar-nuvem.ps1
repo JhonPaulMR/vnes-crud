@@ -106,13 +106,20 @@ done
 ids=$(os "openstack server list --all-projects -f value -c ID -c Status" | awk '$2=="SHUTOFF"{print $1}')
 if [ -n "$ids" ]; then echo "Iniciando instancias desligadas..."; os "openstack server start $(echo $ids)"; fi
 os "openstack server list --all-projects -c Name -c Status -c Networks"
+echo "VNES_WEB=$(os "openstack server list --all-projects --name vnes-web -f value -c ID" | grep -c .)"
 '@
 $remoto = $remoto -replace "`r", ''
-Invoke-Remoto $remoto
+$saida = Invoke-Remoto $remoto
+$saida | Where-Object { $_ -notlike 'VNES_WEB=*' } | ForEach-Object { Write-Host $_ }
+$temWeb = ($saida | Where-Object { $_ -like 'VNES_WEB=*' }) -ne 'VNES_WEB=0'
 
 # --- 4) site ----------------------------------------------------------
-Passo 'Esperando https://www.vnes.com.br/ (200)'
-Esperar 'https://www.vnes.com.br/ respondendo 200' { (Get-HttpCodigo 'https://www.vnes.com.br/') -eq 200 } $TimeoutSiteSeg
+if ($temWeb) {
+    Passo 'Esperando https://www.vnes.com.br/ (200)'
+    Esperar 'https://www.vnes.com.br/ respondendo 200' { (Get-HttpCodigo 'https://www.vnes.com.br/') -eq 200 } $TimeoutSiteSeg
+} else {
+    Passo 'Instancia vnes-web nao existe (ambiente pronto para criar ao vivo). Pulando a espera do site.'
+}
 
 # --- 5) checagens finais ----------------------------------------------
 Passo 'Checagens finais'

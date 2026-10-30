@@ -49,13 +49,44 @@ Formato: grave a tela sem áudio seguindo as cenas, depois narre por cima e colo
 
 ## 2. Preparação antes de gravar
 
-1. **Ligar a nuvem:** feche VS Code, Chrome, WhatsApp e Docker e rode `infra\hyperv\06-ligar-nuvem.ps1` como administrador.
-2. **Decidir as instâncias (recomendado: criar ao vivo).** Antes de gravar, apague `vnes-web`, `vnes-db` e a floating IP (seção 5 de `05-demonstracao.md`). Mantenha a rede, o roteador, os grupos de segurança e a keypair. Renderize de novo os cloud-init (`render.sh`) e deixe `db.yaml` e `web.yaml` num local que você **não** vai mostrar na tela.
-   - Se preferir não recriar, pule a Cena 6 e mostre as instâncias já rodando no Horizon. O vídeo fica mais curto (~5:30) e com menos impacto.
-   - Ao recriar as instâncias, elas ganham chaves SSH novas e a floating IP pode mudar. Antes das Cenas 7 e 10, limpe as chaves antigas no PowerShell: `ssh-keygen -R www.vnes.com.br; ssh-keygen -R db.vnes.com.br`. Também troque o `~/.ssh/vnes-key.pem` se a keypair for recriada.
-3. **Abrir as janelas na ordem:** Hyper-V Manager, `docs/02-topologia.md` renderizado, terminal 1 (SSH `vnes-infra`), terminal 2 (PowerShell local) e o navegador com duas abas (Horizon e site).
-4. **Separar os arquivos do cliente:** capas (PNG ou JPG feitas por você) e as ROMs `croom.nes` e `lj65.nes` (de `node_modules\jsnes\roms\`).
-5. **Fazer um ensaio completo com cronômetro.**
+### Estado deixado pronto (30/10)
+
+- **Já existe na nuvem:** projeto `vnes`, usuário `vnes-devops`, rede `vnes-net`, roteador `vnes-router`, grupos `sg-web` e `sg-db`, e a keypair `vnes-key`.
+- **Removido de propósito, para criar ao vivo na Cena 6:** as instâncias `vnes-web` e `vnes-db` e a floating IP. Até lá, o site `www.vnes.com.br` fica fora do ar.
+- **Cloud-init prontos:** `E:\HyperV\VNES\gravacao\db.yaml` e `web.yaml`. Eles contêm a chave privada do certificado e a senha do banco, então **nunca abra na tela**. No Horizon, na aba **Configuration**, use **Customization Script Source → File → Browse** e escolha o arquivo.
+- **Arquivos do cliente:** `E:\HyperV\VNES\gravacao\cliente\` com `croom.nes`, `lj65.nes`, `capa-croom.png` e `capa-lj65.png`.
+- **Senhas:** em `E:\HyperV\VNES\credenciais-vms.txt`. Copie a do `vnes-devops` **antes** de começar a gravar.
+- **SSH:** os atalhos `vnes-web` e `vnes-db` já estão no `~/.ssh/config` e as chaves antigas foram limpas. Na primeira conexão a cada instância nova, o SSH pergunta `yes/no`: responda `yes`. Se preferir que isso não apareça no vídeo, conecte uma vez fora da gravação.
+
+### Na noite da gravação
+
+1. Feche VS Code, Chrome, WhatsApp e Docker. Abra o **PowerShell como administrador**.
+2. Ligue a nuvem:
+   ```powershell
+   cd "E:\Codes\Trabalho Cloud\vnes-crud\infra\hyperv"; Set-ExecutionPolicy -Scope Process Bypass -Force; .\06-ligar-nuvem.ps1
+   ```
+   Ele termina com "Instancia vnes-web nao existe (ambiente pronto para criar ao vivo)". Isso é o esperado.
+3. **Opcional, mas recomendado:** crie um ponto de restauração. Se algo der errado na gravação, você volta para cá em segundos.
+   ```powershell
+   Checkpoint-VM -Name vnes-infra,vnes-cloud -SnapshotName pre-gravacao
+   ```
+   Para voltar:
+   ```powershell
+   Restore-VMSnapshot -VMName vnes-infra -Name pre-gravacao -Confirm:$false; Restore-VMSnapshot -VMName vnes-cloud -Name pre-gravacao -Confirm:$false
+   ```
+4. Abra as janelas na ordem do roteiro:
+   - Hyper-V Manager;
+   - `docs/02-topologia.md` renderizado;
+   - terminal 1 com `ssh vnes-infra`, já em `cd ~/infra/dns`;
+   - terminal 2 com o PowerShell local;
+   - navegador com a aba do Horizon (`https://cloud.vnes.com.br/dashboard`) e uma aba vazia para o site.
+5. Faça um ensaio rápido das Cenas 6 e 7. Se recriar as instâncias no ensaio, apague-as de novo no Horizon (Instances → Delete; Floating IPs → Release) antes da gravação valer.
+6. Grave seguindo a seção 4.
+7. Depois de gravar:
+   - apague `E:\HyperV\VNES\gravacao\db.yaml` e `web.yaml`;
+   - desligue a nuvem com `.\05-desligar-nuvem.ps1`.
+
+Se preferir não criar as instâncias ao vivo, crie-as antes pelo plano B (`infra/openstack/criar-projeto-vnes.sh`), pule a Cena 6 e mostre só as instâncias rodando no Horizon. O vídeo fica com ~5:30.
 
 ---
 
