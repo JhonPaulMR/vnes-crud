@@ -12,6 +12,7 @@ Valores (IPs, nomes, caminhos): `infra/VARIAVEIS.md` (fonte única). Scripts: pa
 | [`03-ambiente.md`](03-ambiente.md) | III | Hyper-V, Ubuntu, Bind, CA, cliente Windows, DevStack, Horizon HTTPS, preparação de admin |
 | [`04-implantacao.md`](04-implantacao.md) | IV | Projeto no Horizon, `vnes-db`, `vnes-web`, DNS, floating IP, testes, plano B por CLI |
 | [`05-demonstracao.md`](05-demonstracao.md) | V | Roteiro de 5 a 7 min, preparação da gravação, dados de teste, reset |
+| [`06-roteiro-video.md`](06-roteiro-video.md) | V | Auditoria REQ01 a REQ24 e roteiro final com as falas, cena a cena |
 
 Legenda nos comandos: 🪟 Windows | 🖥️ `vnes-infra` | ☁️ `vnes-cloud` | 🌐 `vnes-web` | 🗄️ `vnes-db`.
 
