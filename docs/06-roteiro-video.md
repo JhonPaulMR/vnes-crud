@@ -108,6 +108,9 @@ Se preferir não criar as instâncias ao vivo, crie-as antes pelo plano B (`infr
 ### Cena 0 – Abertura (0:00 – 0:15)
 **Tela:** site `https://www.vnes.com.br` aberto, com o logo.
 
+> **Grave esta cena POR ÚLTIMO**, depois da Cena 11, quando o site já existir, e na edição coloque-a no início do vídeo. Isso é montagem, não aceleração.
+> Se preferir gravar na ordem, abra na tela de login do Horizon e troque o fim da fala por "...e no final vocês vão ver a aplicação da VNES rodando aí".
+
 > "Sejam bem-vindos aí ao vídeo de apresentação do trabalho de Computação em Nuvem. Aqui eu vou tá mostrando como eu montei uma nuvem privada com OpenStack na minha máquina e hospedei aí a aplicação da VNES, seguindo aí cada requisito do enunciado."
 
 ### Cena 1 – Aplicação, REQ01 a REQ08 (0:15 – 1:05)
